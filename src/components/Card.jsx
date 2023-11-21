@@ -1,5 +1,4 @@
-import React, { Children, useEffect, useState, useRef } from "react";
-import NavButton from "./NavButton";
+import React, { useState, useRef } from "react";
 import "../index.css";
 import Task from "./Task";
 
