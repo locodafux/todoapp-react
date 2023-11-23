@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../index.css";
 import Task from "./Task";
+import { useLocalStorage } from "./useLocalStrorage";
 
 const Card = ({ tasks }) => {
   const ref = useRef(null);
@@ -12,8 +13,17 @@ const Card = ({ tasks }) => {
     paddingLeft: "10px",
   };
 
+  const { setItem } = useLocalStorage("value");
+
   const [text, setText] = useState("");
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(["sasd"]);
+
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem("value"));
+    if (items) {
+      setItems(items);
+    }
+  }, []);
 
   const addItem = () => {
     if (text === "") {
@@ -21,8 +31,12 @@ const Card = ({ tasks }) => {
       ref.current.focus();
       return;
     }
-    setItems((current) => [...current, text]);
+
+    const newArray = [...items, text];
+    setItems(newArray);
+    setItem(newArray);
     setText("");
+
     ref.current.focus();
   };
 
@@ -32,10 +46,15 @@ const Card = ({ tasks }) => {
     }
   };
 
-  const deleteItem = (item) => {
-    const newArray = items.filter((i) => i !== item);
-    setItems(newArray);
-    ref.current.focus();
+  const deleteItem = (i) => {
+    var array = [...items];
+    if (i !== -1) {
+      array.splice(i, 1);
+      setItem(array);
+
+      setItems(array);
+      ref.current?.focus();
+    }
   };
 
   const updateItem = (index) => {
@@ -43,9 +62,11 @@ const Card = ({ tasks }) => {
       alert("please enter something");
       return;
     }
+
     const updatedArray = items;
     updatedArray[index] = text;
     setItems(updatedArray);
+    setItem(items);
     setText("");
     ref.current.focus();
   };
@@ -115,7 +136,7 @@ const Card = ({ tasks }) => {
                   right: "0px",
                   bottom: "10px",
                 }}
-                onClick={() => deleteItem(item)}
+                onClick={() => deleteItem(index)}
               >
                 Delete
               </button>
